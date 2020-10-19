@@ -1,19 +1,14 @@
 #![no_std]
 #![no_main]
 
-extern crate panic_halt;
 use arduino_uno::prelude::*;
+use panic_halt as _;
 
 #[arduino_uno::entry]
 fn main() -> ! {
     let dp = arduino_uno::Peripherals::take().unwrap();
 
-    let mut delay = arduino_uno::Delay::new();
-    let mut pins = arduino_uno::Pins::new(
-        dp.PORTB,
-        dp.PORTC,
-        dp.PORTD,
-    );
+    let mut pins = arduino_uno::Pins::new(dp.PORTB, dp.PORTC, dp.PORTD);
     let mut serial = arduino_uno::Serial::new(
         dp.USART0,
         pins.d0,
@@ -28,11 +23,13 @@ fn main() -> ! {
     );
 
     ufmt::uwriteln!(&mut serial, "Write direction test:\r").void_unwrap();
-    i2c.i2cdetect(&mut serial, arduino_uno::hal::i2c::Direction::Write).void_unwrap();
+    i2c.i2cdetect(&mut serial, arduino_uno::hal::i2c::Direction::Write)
+        .void_unwrap();
     ufmt::uwriteln!(&mut serial, "\r\nRead direction test:\r").void_unwrap();
-    i2c.i2cdetect(&mut serial, arduino_uno::hal::i2c::Direction::Read).void_unwrap();
+    i2c.i2cdetect(&mut serial, arduino_uno::hal::i2c::Direction::Read)
+        .void_unwrap();
 
     loop {
-        delay.delay_ms(1000 as u16);
+        arduino_uno::delay_ms(1000);
     }
 }

@@ -2,8 +2,8 @@
 #![no_main]
 #![feature(abi_avr_interrupt)]
 
-extern crate panic_halt;
 use arduino_leonardo::prelude::*;
+use panic_halt as _;
 
 // This pin will be used from the interrupt handler
 use arduino_leonardo::hal::port;
@@ -13,13 +13,7 @@ static mut PIN: Option<port::portc::PC7<port::mode::Output>> = None;
 fn main() -> ! {
     let dp = arduino_leonardo::Peripherals::take().unwrap();
 
-    let mut delay = arduino_leonardo::Delay::new();
-    let mut pins = arduino_leonardo::Pins::new(
-        dp.PORTB,
-        dp.PORTC,
-        dp.PORTD,
-        dp.PORTE,
-    );
+    let mut pins = arduino_leonardo::Pins::new(dp.PORTB, dp.PORTC, dp.PORTD, dp.PORTE, dp.PORTF);
 
     let mut led0 = pins.led_rx.into_output(&mut pins.ddr);
     let mut led1 = pins.led_tx.into_output(&mut pins.ddr);
@@ -49,12 +43,14 @@ fn main() -> ! {
     ei.eimsk.write(|w| w.int().bits(0x40));
 
     // Enable interrupts
-    avr_device::interrupt::enable();
+    unsafe {
+        avr_device::interrupt::enable();
+    }
 
     loop {
         led0.toggle().void_unwrap();
         led1.toggle().void_unwrap();
-        delay.delay_ms(300u16);
+        arduino_leonardo::delay_ms(300);
     }
 }
 

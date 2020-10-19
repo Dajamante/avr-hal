@@ -1,4 +1,9 @@
-//! `PORTB` - `PORTD` digital IO
+//! Digital IO Implementations
+//!
+//! For a detailed explanation, refer to the [general Digital IO documentation][1].
+//!
+//! [1]: ../../avr_hal_generic/port/index.html
+
 pub use avr_hal::port::mode;
 
 pub trait PortExt {
@@ -9,9 +14,9 @@ pub trait PortExt {
 
 avr_hal::impl_generic_pin! {
     pub enum Pin {
-        B(crate::atmega328p::PORTB, portb, pinb),
-        C(crate::atmega328p::PORTC, portc, pinc),
-        D(crate::atmega328p::PORTD, portd, pind),
+        B(crate::atmega328p::PORTB, portb, pinb, ddrb),
+        C(crate::atmega328p::PORTC, portc, pinc, ddrc),
+        D(crate::atmega328p::PORTD, portd, pind, ddrd),
     }
 }
 
